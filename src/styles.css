@@ -1,1 +1,40 @@
-/* You can add global styles to this file, and also import other style files */
+.equam-hover { cursor: pointer; }
+.equam-hover:hover { color: #3db669; }
+.equam-color { color: #3db669; }
+.equam-btn { color: #3db669; transition: 0.5s; }
+.equam-btn:hover { color: inherit; }
+.equam-input { border: none; border-bottom: 1px solid #3db669; background-color: transparent;}
+.equam-border { border: 1px solid #3db669; border-radius: 3px; background-color: white;}
+.equam-card:hover .equam-overlay { opacity: .9; }
+.equam-overlay
+{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .5s ease;
+  background-color: white;
+}
+.equam-menu
+{
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 2000;
+  top: 0;
+  left: 0;
+  transition: .5s ease;
+  background: white;
+  display: none;
+}
+.timeline-item
+{
+	padding: 3em 1em 1em;
+	position: relative;
+	color: rgba(black, .7);
+	border-left: 2px solid #3db669;
+}

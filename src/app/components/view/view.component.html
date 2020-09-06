@@ -1,0 +1,273 @@
+<!-- formulario de busqueda -->
+<div class="container mt-5 d-flex animate__animated animate__pulse" *ngIf="form">
+    <div class="row my-auto">
+      <div class="col-sm-6 p-3 d-flex">
+        <img src="../assets/equam-logo.jpg" class="img-fluid my-auto" alt="EQUAM LOGO">
+      </div>
+      <div class="col-sm-6 p-3 d-flex border-left">
+        <div class="my-auto">
+          <div class="display-4">¡Conoce la historia de tu árbol! </div>
+          <form class="mt-3 p-3">
+            <div class="form-group">
+              <label class="lead">Ingresa tu correo</label>
+              <input type="email" class="form-control" id="customerEmail" name="customerEmail" [(ngModel)]="customerEmail">
+              <small class="form-text text-muted">Ingresa la dirección de mail donde reciste el correo de bienvenida.</small>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" (click)="searchByMail();">Buscar correo</button>
+          </form>
+          <form class="p-3">
+            <div class="form-group">
+              <label class="lead">o ingresá el nombre de tu empresa</label>
+              <input type="text" class="form-control" id="companyName" name="companyName" [(ngModel)]="companyName">
+              <small class="form-text text-muted">Ingresa el nombre de tu enpresa asociada.</small>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" (click)="searchByCompany();">Buscar empresa</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+  
+<!-- Resultados de la busqueda -->
+<div class="container mt-5 animate__animated animate__pulse" *ngIf="found">
+
+    <div class="display-4">
+        Tus árboles! Tu aporte!
+        <button class="btn btn-primary btn-sm float-sm-right" (click)="resetSearch();">Volver a buscar</button>
+    </div>
+
+    <!-- basic dashboard -->
+    <div class="card-deck mt-3 p-3">
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <h1 class="equam-color text-center"><i class="fas fa-tree"></i></h1>
+                    </div>
+                    <div class="col-8">
+                        <h2 class="card-text mb-0">{{calcTrees}}</h2>
+                        <p class="card-text text-muted">árboles</p>
+                    </div>
+                </div>               
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <h1 class="equam-color text-center"><i class="fas fa-lungs"></i></h1>
+                    </div>
+                    <div class="col-8">
+                        <h2 class="card-text mb-0">{{calcCO2}} Kg</h2>
+                        <p class="card-text text-muted">CO2 absorbidos al mes</p>
+                    </div>
+                </div>               
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <h1 class="equam-color text-center"><i class="fas fa-globe-americas"></i></h1>
+                    </div>
+                    <div class="col-8">
+                        <h2 class="card-text mb-0">{{calcArea}} m2</h2>
+                        <p class="card-text text-muted">reforestados</p>
+                    </div>
+                </div>               
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-3 p-3">
+        <div class="col-sm-6" *ngFor="let item of processFoundList">
+            <div class="card equam-card mb-1">
+                <div class="card-body">
+                <h5 class="card-title">
+                    <span *ngIf="item.product.qtty == '1'" >Un Árbol Equam</span>
+                    <span *ngIf="item.product.qtty != '1'" >{{item.product.qtty}} árboles Equam</span>
+                </h5>
+                <p class="card-text">
+                    <span *ngIf="item.product.qtty == '1'" >Comenzó</span>
+                    <span *ngIf="item.product.qtty != '1'" >Comenzaron </span>
+                    a crecer en {{item.startdate | date:'MMMM yyyy'}} luego de tu compra en {{item.customerCompany}}.</p>
+                </div>
+                <div class="equam-overlay d-flex">
+                    <button class="btn btn-primary m-auto" (click)="viewTimeline(item);">Ver su historía</button>
+                    <p class="text-muted m-2">[#{{item.id}}]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- timeline -->
+<div class="container mt-5 animate__animated animate__pulse" *ngIf="timeline">
+
+    <div class="text-left timeline-item">
+        <button class="btn btn-primary btn-sm float-sm-right ml-1" (click)="resetSearch();">Volver a buscar</button>
+        <button class="btn btn-primary btn-sm float-sm-right" (click)="backToFound();">Volver a la lista</button>
+        <img src="assets\equam-logo.jpg" class="rounded-circle mb-3" width="150em" height="150em">
+        <div class="display-4 equam-color">Tu árbol!</div>
+        <span class="text-muted lead mt-1">Aquí encontratraras cada paso de tu arbol hasta llegar a su destino</span>
+    </div>
+    
+    <!-- introducción con información del arbol -->
+    <div class="timeline-item">
+        <p class="text-muted">{{processTimeLine.product.description}}</p>
+    </div>
+    
+    <!-- información del productor si está asignado  -->
+    <div class="timeline-item" *ngIf="processTimeLine.manufacturerid != '0'">  
+        <p class="display-4">{{processTimeLine.manufacturer.name}} {{processTimeLine.manufacturer.surname}}</p>
+        <p class="text-muted">{{processTimeLine.manufacturer.bio}}</p>
+        <div class="row">
+            <div class="col-sm-4">
+                <img 
+                    [src]=" apiurl + '/data/images/index.php?id=' + processTimeLine.manufacturer.avatar "
+                    alt="Foto productor"
+                    class="img-fluid border"
+                    *ngIf="processTimeLine.manufacturer.avatar != '0'"
+                >
+            </div>
+            <div class="col-sm-4">
+                <img 
+                    [src]=" apiurl + '/data/images/index.php?id=' + processTimeLine.manufacturer.img1 "
+                    alt="Foto productor"
+                    class="img-fluid border"
+                    *ngIf="processTimeLine.manufacturer.img1 != '0'"
+                >
+            </div>
+            <div class="col-sm-4">
+                <img 
+                    [src]=" apiurl + '/data/images/index.php?id=' + processTimeLine.manufacturer.img2 "
+                    alt="Foto productor"
+                    class="img-fluid border"
+                    *ngIf="processTimeLine.manufacturer.img2 != '0'"
+                >
+            </div>
+        </div>
+    </div>
+    
+    <!-- información si el productor no está asignado -->
+    <div class="timeline-item" *ngIf="processTimeLine.manufacturerid == '0'">
+        Aun no hay un productor asignado
+    </div>
+
+    <!-- germinación -->
+    <div class="timeline-item" *ngIf="germ.pictureid !='0'">
+        <p class="equam-color py-0 border-bottom">{{germ.date | date:'MMMM yyyy' }}</p>
+        <p class="display-4">Germinación</p>
+        <p class="text-muted">La germinación es el proceso mediante el cual un embrión se desarrolla hasta convertirse en una planta. Es un proceso que se lleva a cabo cuando el embrión se hincha y la cubierta de la semilla se rompe.</p>
+        <div class="row">
+            <div class="col-sm-4">
+                <img 
+                    [src]=" apiurl + '/data/images/index.php?id=' + germ.pictureid "
+                    alt="Foto germinación"
+                    class="img-fluid border"
+                >
+            </div>
+        </div>
+    </div>
+
+    <!-- primer repique -->
+    <div class="timeline-item" *ngIf="repic1.pictureid !='0'">
+        <p class="equam-color py-0 border-bottom">{{repic1.date | date:'MMMM yyyy' }}</p>
+        <p class="display-4">Primer repique</p>
+        <p class="text-muted">El repicado es una actividad intermedia entre la siembra y el trasplante. Podría llamarse trasplante; pero no, el repicado es una labor intermedia.</p>
+        <div class="row">
+            <div class="col-sm-4">
+                <img 
+                    [src]=" apiurl + '/data/images/index.php?id=' + repic1.pictureid "
+                    alt="Foto primer repique"
+                    class="img-fluid border"
+                >
+            </div>
+        </div>
+    </div>
+
+    <!-- segundo repique -->
+    <div class="timeline-item" *ngIf="repic2.pictureid !='0'">
+        <p class="equam-color py-0 border-bottom">{{repic2.date | date:'MMMM yyyy' }}</p>
+        <p class="display-4">Segundo repique</p>
+        <p class="text-muted">El repicado es una actividad intermedia entre la siembra y el trasplante. Podría llamarse trasplante; pero no, el repicado es una labor intermedia.</p>
+        <div class="row">
+            <div class="col-sm-4">
+                <img 
+                    [src]=" apiurl + '/data/images/index.php?id=' + repic2.pictureid "
+                    alt="Foto segundo repique"
+                    class="img-fluid border"
+                >
+            </div>
+        </div>
+    </div>
+
+    <!-- rustificación -->
+    <div class="timeline-item" *ngIf="rust.pictureid !='0'">
+        <p class="equam-color py-0 border-bottom">{{rust.date | date:'MMMM yyyy' }}</p>
+        <p class="display-4">Rustificación</p>
+        <p class="text-muted">La rustificación consiste en la exposición del árbol para que tome contacto con el sol y el viento antes de su trasplante definitivo.</p>
+        <div class="row">
+            <div class="col-sm-4">
+                <img 
+                    [src]=" apiurl + '/data/images/index.php?id=' + rust.pictureid "
+                    alt="Foto rustificación"
+                    class="img-fluid border"
+                >
+            </div>
+        </div>
+    </div>
+    
+    <!-- plantación definitiva -->
+    <div class="timeline-item" *ngIf="plant.pictureid !='0' && processTimeLine.destinationid !='0'">
+        <p class="equam-color py-0 border-bottom">{{plant.date | date:'MMMM yyyy' }}</p>
+        <p class="display-4">Plantación definitiva</p>
+        <p class="text-muted">La rustificación consiste en la exposición del árbol para que tome contacto con el sol y el viento antes de su trasplante definitivo.</p>
+        <div class="row">
+            <div class="col-sm-4">
+                <img 
+                    [src]=" apiurl + '/data/images/index.php?id=' + plant.pictureid "
+                    alt="Foto plantación"
+                    class="img-fluid border"
+                >
+            </div>
+        </div>
+    </div>
+
+    <!-- destino -->
+    <div class="timeline-item" *ngIf="processTimeLine.destinationid !='0'">
+        <p class="display-4">Destino</p>
+        <p class="text-muted">
+            Podes ver la ubicación permanente de tu árbol haciendo click 
+            <a [href]=' "https://www.google.com/maps/@"+ processTimeLine.destination.lat +","+ processTimeLine.destination.lon +",300m"' target="_blank">aquí</a>.
+        </p>
+    </div>
+
+</div>
+
+<!-- mensaje de error -->
+<div class="container mt-3 p-5 animate__animated animate__pulse" *ngIf="error">
+
+    <div class="alert alert-danger">
+        <h1 class="display-4 float-right"><i class="fas fa-sad-tear"></i></h1>
+        <h1 class="display-4">Algo salió mal!</h1>
+        <p class="lead">No encontramos nada con ese correo o nombre de empresa. Verifica que el correo o el nombre de la empresa esten correctamente escritos. Volve a intentarlo presionando <a class="equam-color" (click)="resetSearch();">aquí</a>.</p>
+    </div>
+
+</div>
+
+<!-- pie de página -->
+<footer class="footer mt-auto py-5">
+    <div class="container text-center">
+        <span class="text-muted">2020 &copy; Equam Group</span><br>
+        <small class="text-muted small">powered by UVCoding <a href="http://uvcoding.com.ar" class="text-muted text-info"> | Multiplicamos tu marca personal! </a></small>
+    </div>
+</footer>
+
+<!-- spinner -->
+<app-wait-spiner *ngIf="waiting"></app-wait-spiner>
