@@ -40,8 +40,8 @@ export class ViewComponent implements OnInit {
   apiurl:string;
   waiting:boolean = false;
 
-  customerEmail:string = "jpauvels@gmail.com";
-  companyName:string = "Facebook";
+  customerEmail:string = null;
+  companyName:string = null;
 
   processFoundList:any = [];
   processTimeLine:any = [];
@@ -115,8 +115,8 @@ export class ViewComponent implements OnInit {
     this.timeline = false;
     this.error = false;
     this.banner = false;
-    this.customerEmail = "jpauvels@gmail.com";
-    this.companyName = "Facebook";
+    this.customerEmail = null;
+    this.companyName = null;
     this.processFoundList = [];
     this.processTimeLine = [];
     this.calcTrees = 0;
