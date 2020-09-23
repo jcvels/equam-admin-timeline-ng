@@ -20,6 +20,7 @@ export class ViewComponent implements OnInit {
           this.calcDashboard();
           this.found = true;
           this.form = false;
+          this.banner = true;
         }
         else
         {
@@ -34,6 +35,7 @@ export class ViewComponent implements OnInit {
   found:boolean = false;
   timeline:boolean = false;
   error:boolean = false;
+  banner:boolean = false;
 
   apiurl:string;
   waiting:boolean = false;
@@ -112,6 +114,7 @@ export class ViewComponent implements OnInit {
     this.found = false;
     this.timeline = false;
     this.error = false;
+    this.banner = false;
     this.customerEmail = "jpauvels@gmail.com";
     this.companyName = "Facebook";
     this.processFoundList = [];
